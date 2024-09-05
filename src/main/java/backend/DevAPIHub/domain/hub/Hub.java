@@ -22,12 +22,12 @@ public class Hub {
     private String apiDescription;
     private boolean authRequired;
     private String apiLink;
-    private String apiCategory;
+    private Category apiCategory;
     @Min(1)
     @Max(5)
     private float rating;
 
-    public Hub(String apiName, String apiDescription, boolean authRequired, String apiLink, String apiCategory, @Min(1) @Max(5) float rating) {
+    public Hub(String apiName, String apiDescription, boolean authRequired, String apiLink, Category apiCategory, @Min(1) @Max(5) float rating) {
         this.apiName = apiName;
         this.apiDescription = apiDescription;
         this.authRequired = authRequired;
