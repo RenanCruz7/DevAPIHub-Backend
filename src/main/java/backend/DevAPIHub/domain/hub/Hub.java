@@ -33,6 +33,6 @@ public class Hub {
         this.authRequired = authRequired;
         this.apiLink = apiLink;
         this.apiCategory = apiCategory;
-        this.rating = rating;
+        this.rating = 0.0f;
     }
 }
