@@ -1,9 +1,6 @@
 package backend.DevAPIHub.controller;
 
-import backend.DevAPIHub.domain.user.AuthenticationData;
-import backend.DevAPIHub.domain.user.CreateUserDTO;
-import backend.DevAPIHub.domain.user.User;
-import backend.DevAPIHub.domain.user.UserRepository;
+import backend.DevAPIHub.domain.user.*;
 import backend.DevAPIHub.infra.security.TokenJWTData;
 import backend.DevAPIHub.infra.security.TokenService;
 import jakarta.validation.Valid;
@@ -20,48 +17,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping
 public class UserController {
-    @Autowired
-    private AuthenticationManager manager;
 
     @Autowired
-    private TokenService tokenService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity peformLogin(@RequestBody @Valid AuthenticationData data) {
-        var authenticationToken = new UsernamePasswordAuthenticationToken(data.username(), data.password());
-        var authentication = manager.authenticate(authenticationToken);
+        var token = userService.PerformLogin(data);
 
-        var tokenJWT = tokenService.GenerateToken((User) authentication.getPrincipal());
-
-        return ResponseEntity.ok(new TokenJWTData(tokenJWT));
+        return ResponseEntity.ok(new TokenJWTData(token));
     }
 
     @PostMapping("/register")
     public ResponseEntity createUser(@RequestBody @Valid CreateUserDTO createUserDTO) {
-        if (!createUserDTO.password().equals(createUserDTO.confirmPassword())) {
-            return ResponseEntity.badRequest().build();
-        }
+        var token = userService.RegisterUser(createUserDTO);
 
-        User user = new User();
-        user.setUsername(createUserDTO.username());
-        user.setEmail(createUserDTO.email());
-        user.setPassword(passwordEncoder.encode(createUserDTO.password()));
-        user.setGithub(createUserDTO.github());
-        user.setLinkedin(createUserDTO.linkedin());
-
-        User savedUser = userRepository.save(user);
-
-
-        var authenticationToken = new UsernamePasswordAuthenticationToken(createUserDTO.username(), createUserDTO.password());
-        var authentication = manager.authenticate(authenticationToken);
-
-        var tokenJWT = tokenService.GenerateToken((User) authentication.getPrincipal());
-
-        return ResponseEntity.ok(new TokenJWTData(tokenJWT));
+        return ResponseEntity.ok(new TokenJWTData(token));
     }
 
 }
