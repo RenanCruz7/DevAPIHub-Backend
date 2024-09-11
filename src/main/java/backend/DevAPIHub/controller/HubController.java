@@ -25,8 +25,6 @@ public class HubController {
     @PostMapping
     @Transactional
     public ResponseEntity CreateHub(@RequestBody CreateHubDTO dados, UriComponentsBuilder uriBuilder) {
-
-
         Hub hub = hubService.execute(dados);
         var uri = uriBuilder.path("/Posts/{id}").buildAndExpand(hub.getId()).toUri();
         return ResponseEntity.created(uri).body(new DetailsHubDTO(hub));
