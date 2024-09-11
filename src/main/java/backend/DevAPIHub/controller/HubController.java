@@ -6,13 +6,12 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/hub")
@@ -21,13 +20,21 @@ public class HubController {
 
     @Autowired
     private HubService hubService;
+    @Autowired
+    private HubRepository hubRepository;
 
-    @PostMapping
+    @PostMapping("/create")
     @Transactional
     public ResponseEntity CreateHub(@RequestBody CreateHubDTO dados, UriComponentsBuilder uriBuilder) {
         Hub hub = hubService.execute(dados);
         var uri = uriBuilder.path("/Posts/{id}").buildAndExpand(hub.getId()).toUri();
         return ResponseEntity.created(uri).body(new DetailsHubDTO(hub));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Hub>> List(){
+        var hubs = hubRepository.findAll();
+        return ResponseEntity.ok(hubs);
     }
 }
 
